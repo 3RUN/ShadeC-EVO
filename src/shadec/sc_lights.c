@@ -34,8 +34,11 @@ void sc_light_remove(ENTITY* ent)
 	
 	sys_free(myData.data);
 	sys_free(myData);
-
-	ptr_remove(ent);
+	
+	// we don't need to delete the ent
+	// because this function will be automatically called
+	// then ent is being already deleted
+	//ptr_remove(ent);
 }
 
 void sc_light_updatePointMtx(ENTITY* inLight)

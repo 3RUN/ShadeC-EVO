@@ -17,11 +17,11 @@ Basic Example on how to setup Shade-C
 
 ENTITY* skycube =
 {
-  type = "plain_abraham+6.tga";
-  flags2 = SKY | CUBE | SHOW;
-  red = 130;
-  green = 130;
-  blue = 130;
+	type = "plain_abraham+6.tga";
+	flags2 = SKY | CUBE | SHOW;
+	red = 130;
+	green = 130;
+	blue = 130;
 }
 
 //simple camera script...
@@ -31,7 +31,7 @@ void v_camera()
 	set(my,PASSABLE);
 	while(1)
 	{
-		c_move(my,vector(key_force.y*25*time_step,-key_force.x*25*time_step,0),nullvector,IGNORE_PASSABLE);
+		c_move(my,vector((key_w - key_s)*25*time_step,(key_a - key_d)*25*time_step,0),nullvector,IGNORE_PASSABLE);
 		my.pan -= mickey.x;
 		my.tilt -= mickey.y;
 		
@@ -42,8 +42,22 @@ void v_camera()
 	}
 }
 
+void on_exit_event()
+{
+	sc_destroy(sc_screen_default);
+}
+
+void on_ent_remove_event(ENTITY *ent)
+{
+	// remove memory leaks for all sc_skill_ calls
+	sc_light_remove(ent);
+}
+
 void main()
 {
+	on_exit = on_exit_event;
+	on_ent_remove = on_ent_remove_event;
+	
 	d3d_triplebuffer = 1; //don't let the gpu wait for data
 	level_load(NULL);
 	wait(3);

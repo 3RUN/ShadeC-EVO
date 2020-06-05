@@ -28,7 +28,13 @@ void setupMaterial()
 	
 	//after setting everything up, switch to Shade-C's material event.
 	// !! THIS IS IMPORTANT !!
-	mtl.flags = ENABLE_RENDER;
+	
+	// this causes
+	//"Unfreed: 1056, EFX, 16 bytes"
+	//"Unfreed: 1060, EFX, 20 bytes"
+	//"Unfreed: 1064, EFX, 24 bytes"
+	// maybe because this flag is already set in each materian ?
+	//mtl.flags = ENABLE_RENDER;
 	mtl.event = sc_materials_event; 
 }
 
@@ -89,11 +95,11 @@ MATERIAL* mtlDissolveShadow =
 
 ENTITY* skycube =
 {
-  type = "plain_abraham+6.tga";
-  flags2 = SKY | CUBE | SHOW;
-  red = 130;
-  green = 130;
-  blue = 130;
+	type = "plain_abraham+6.tga";
+	flags2 = SKY | CUBE | SHOW;
+	red = 130;
+	green = 130;
+	blue = 130;
 }
 
 //simple camera script...
@@ -103,7 +109,7 @@ void v_camera()
 	set(my,PASSABLE);
 	while(1)
 	{
-		c_move(my,vector(key_force.y*25*time_step,-key_force.x*25*time_step,0),nullvector,IGNORE_PASSABLE);
+		c_move(my,vector((key_w - key_s)*25*time_step,(key_a - key_d)*25*time_step,0),nullvector,IGNORE_PASSABLE);
 		my.pan -= mickey.x;
 		my.tilt -= mickey.y;
 		
@@ -114,8 +120,22 @@ void v_camera()
 	}
 }
 
+void on_exit_event()
+{
+	sc_destroy(sc_screen_default);
+}
+
+void on_ent_remove_event(ENTITY *ent)
+{
+	// remove memory leaks for all sc_skill_ calls
+	sc_light_remove(ent);
+}
+
 void main()
-{	
+{
+	on_exit = on_exit_event;
+	on_ent_remove = on_ent_remove_event;
+	
 	shadow_stencil = -1; //turn off all engine intern shadow calculations. THIS IS IMPORTANT!
 	level_load("05.wmb");
 	wait(3); //wait for level load
@@ -150,7 +170,7 @@ void main()
 	// -> more info in sc_core.h, in struct SC_SETTINGS
 	sc_screen_default.settings.hdr.enabled = 1; //enable Bloom/HDR
 	sc_screen_default.settings.hdr.lensflare.enabled = 1; //enable for a nice lensflare effect in combination with HDR/Bloom
-		
+	
 	//initialize shade-c, use default screen object
 	sc_setup(sc_screen_default);
 	

@@ -21,11 +21,11 @@ NOT FNISHED YET!!! DONT USE!!!
 
 ENTITY* skycube =
 {
-  type = "plain_abraham+6.tga";
-  flags2 = SKY | CUBE | SHOW;
-  red = 130;
-  green = 130;
-  blue = 130;
+	type = "plain_abraham+6.tga";
+	flags2 = SKY | CUBE | SHOW;
+	red = 130;
+	green = 130;
+	blue = 130;
 }
 
 //simple camera script...
@@ -35,7 +35,7 @@ void v_camera()
 	set(my,PASSABLE);
 	while(1)
 	{
-		c_move(my,vector(key_force.y*25*time_step,-key_force.x*25*time_step,0),nullvector,IGNORE_PASSABLE);
+		c_move(my,vector((key_w - key_s)*25*time_step,(key_a - key_d)*25*time_step,0),nullvector,IGNORE_PASSABLE);
 		my.pan -= mickey.x;
 		my.tilt -= mickey.y;
 		
@@ -46,8 +46,22 @@ void v_camera()
 	}
 }
 
+void on_exit_event()
+{
+	sc_destroy(sc_screen_default);
+}
+
+void on_ent_remove_event(ENTITY *ent)
+{
+	// remove memory leaks for all sc_skill_ calls
+	sc_light_remove(ent);
+}
+
 void main()
 {
+	on_exit = on_exit_event;
+	on_ent_remove = on_ent_remove_event;
+	
 	d3d_triplebuffer = 1; //don't let the gpu wait for data
 	shadow_stencil = -1; //turn off all engine intern shadow calculations. THIS IS IMPORTANT!
 	level_load("");
@@ -59,7 +73,7 @@ void main()
 	//set ambient color to zero as we want a dark level with nice shadows ;)
 	//vec_set(ambient_color, vector(0,0,0));
 	//vec_set(ambient_color, vector(180,180,180));
-		
+	
 	//create a camera object so we can move around the scene
 	you = ent_create(NULL, vector(168,-478, 212), v_camera);
 	you.pan = 123;
@@ -73,7 +87,7 @@ void main()
 	
 	//load terrain
 	you = ent_create("terrain01.mdl", nullvector, NULL);
-	sc_ent_terrain(you, "assets/terrainTextures/terrainAtlas01.dds");
+	//sc_ent_terrain(you, "assets/terrainTextures/terrainAtlas01.dds");
 	set(you, SHADOW);
 	
 	//set resolution before calling sc_setup
@@ -120,12 +134,12 @@ void main()
 	
 	/*
 	while(1)
-  {
-    sun_angle.pan += time_frame; 
-    sun_angle.pan %= 360; 
-    sun_angle.tilt = fsin(sun_angle.pan, 45) + 45;
-    sun_light = sun_angle.tilt;
-    wait(1);
-  }
-  */
+	{
+		sun_angle.pan += time_frame; 
+		sun_angle.pan %= 360; 
+		sun_angle.tilt = fsin(sun_angle.pan, 45) + 45;
+		sun_light = sun_angle.tilt;
+		wait(1);
+	}
+	*/
 }

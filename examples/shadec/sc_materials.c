@@ -51,6 +51,10 @@ void sc_materials_init()
 	*/
 	//if(!sc_materials_texMatData1) sc_materials_texMatData1 = sc_volumeTexture_create(sc_materials_sMatData1);
 	
+	// had to free matData, otherwise it caused
+	// "Unfreed: 1321,    , 20 bytes"
+	sys_free(matData);
+	
 	sc_materials_initialized = 1;
 }
 

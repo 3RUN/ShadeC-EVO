@@ -4,7 +4,8 @@ void sc_viewEvent_init(SC_SCREEN* screen)
 	sc_viewEvent_destroy(screen);
 	
 	screen.materials.viewEvent = mtl_create();
-	effect_load(screen.materials.viewEvent, "technique t1{ pass p0	{}	}");
+	// this causes "Unfreed: 1419, EFF, 28 bytes" on each sc_viewEvent_init call
+	//effect_load(screen.materials.viewEvent, "technique t1{ pass p0	{}	}");
 	screen.materials.viewEvent.flags = ENABLE_VIEW | ENABLE_TREE;
 	screen.materials.viewEvent.event = sc_viewEvent_event;
 	screen.materials.viewEvent.SC_SKILL = screen;
